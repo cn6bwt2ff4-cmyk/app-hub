@@ -215,7 +215,7 @@
   }
 
   // ---------- Tab 切换 ----------
-  const tabs = ['home', 'korean', 'english', 'inspire', 'me'];
+  const tabs = ['home', 'korean', 'english', 'inspire', 'edit', 'me'];
   let currentTab = 'home';
 
   function switchTab(name) {
@@ -243,6 +243,7 @@
       case 'korean': renderKorean(page); break;
       case 'english': renderEnglish(page); break;
       case 'inspire': renderInspire(page); break;
+      case 'edit': renderEdit(page); break;
       case 'me': renderMe(page); break;
     }
   }
@@ -1694,6 +1695,183 @@
       navigator.clipboard?.writeText(t); toast('已复制');
     });
     gen();
+  }
+
+
+  // ===== 剪辑学习页 =====
+  let editView = 'plan';
+
+  function renderEdit(p) {
+    if (editView === 'plan') renderEditPlan(p);
+    else if (editView === 'daily') renderEditDaily(p);
+    else if (editView === 'skill') renderEditSkill(p);
+    else if (editView === 'resource') renderEditResource(p);
+  }
+
+  function renderEditPlan(p) {
+    const progress = Store.get('editProgress', { days: [], stage: 1, completedDaily: [] });
+    const today = new Date().toISOString().slice(0,10);
+    const todayDone = progress.days.includes(today);
+    const totalDays = progress.days.length;
+    const stage = EDIT_DATA.stages.find(s => s.id === progress.stage) || EDIT_DATA.stages[0];
+    const dailyDone = progress.completedDaily.length;
+
+    p.innerHTML = `
+      <div class="edit-overview">
+        <div class="edit-title">${EDIT_DATA.meta.title}</div>
+        <div class="edit-sub">${EDIT_DATA.meta.desc}</div>
+        <div class="en-progress"><div class="en-progress-bar" style="width:${Math.min(dailyDone/21*100,100)}%"></div></div>
+        <div class="en-progress-text">
+          <span>21天任务 ${dailyDone}/21</span>
+          <span>已坚持 ${totalDays} 天</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="font-size:13px;color:var(--text-secondary)">当前阶段</span>
+          <span style="font-size:12px;background:#fef3c7;color:#92400e;padding:2px 10px;border-radius:8px">${stage.weeks}</span>
+        </div>
+        <div style="font-size:18px;font-weight:700;color:#f59e0b;margin-bottom:4px">${stage.name}</div>
+        <div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px">${stage.goal}</div>
+        <div style="background:#fffbeb;border-radius:8px;padding:10px;font-size:12px;color:#92400e;line-height:1.6;margin-bottom:12px">💡 ${stage.tip}</div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px">本阶段任务</div>
+        ${stage.tasks.map((t,i) => `<div style="display:flex;align-items:center;gap:8px;padding:4px 0;font-size:13px"><div style="width:18px;height:18px;border-radius:50%;background:#f59e0b;color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${i+1}</div>${t}</div>`).join('')}
+      </div>
+
+      <div class="section-header"><h3>学习内容</h3></div>
+      <div class="en-quick-grid">
+        <button class="en-quick-card" data-view="daily">
+          <div class="en-qc-icon" style="background:#f59e0b">📋</div>
+          <div class="en-qc-name">21天任务</div>
+          <div class="en-qc-desc">${dailyDone}/21完成</div>
+        </button>
+        <button class="en-quick-card" data-view="skill">
+          <div class="en-qc-icon" style="background:#ef4444">⚡</div>
+          <div class="en-qc-name">技巧卡片</div>
+          <div class="en-qc-desc">10个核心技巧</div>
+        </button>
+        <button class="en-quick-card" data-view="resource">
+          <div class="en-qc-icon" style="background:#8b5cf6">🔗</div>
+          <div class="en-qc-name">资源工具</div>
+          <div class="en-qc-desc">素材+教程</div>
+        </button>
+      </div>
+
+      <button class="en-checkin-btn ${todayDone?'done':''}" id="editCheckin">
+        ${todayDone ? '✅ 今日已打卡' : '📅 今日打卡'}
+      </button>
+
+      <div class="en-tip-card" style="background:#fffbeb;border-left-color:#f59e0b;color:#92400e">
+        <b>🎯 学习心法</b><br>
+        <b>第1-2周</b>：装剪映，每天剪15秒，熟悉基本操作<br>
+        <b>第3-6周</b>：学转场/字幕/配乐/变速，每周1条完整作品<br>
+        <b>第2-3月</b>：练节奏+调色，转电脑版<br>
+        <b>第4-6月</b>：挑战vlog/口播/混剪/教程不同类型<br><br>
+        <b>核心</b>：剪100条烂片 > 看100个教程。动手才是王道。
+      </div>
+    `;
+
+    p.querySelectorAll('.en-quick-card').forEach(c => {
+      c.addEventListener('click', () => { editView = c.dataset.view; renderEdit(p); $('#content').scrollTop = 0; });
+    });
+    p.querySelector('#editCheckin').addEventListener('click', () => {
+      if (todayDone) return;
+      const prog = Store.get('editProgress', { days: [], stage: 1, completedDaily: [] });
+      prog.days.push(today);
+      if (prog.days.length >= 120) prog.stage = 4;
+      else if (prog.days.length >= 60) prog.stage = 3;
+      else if (prog.days.length >= 14) prog.stage = 2;
+      Store.set('editProgress', prog);
+      toast('🎉 打卡成功！已坚持' + prog.days.length + '天');
+      renderEdit(p);
+    });
+  }
+
+  function renderEditDaily(p) {
+    const progress = Store.get('editProgress', { days: [], stage: 1, completedDaily: [] });
+    p.innerHTML = `
+      <button class="kr-back" id="editBack">‹ 返回</button>
+      <div class="page-title">21天每日任务</div>
+      <div class="page-subtitle">每天一个任务，21天学会剪辑</div>
+      ${EDIT_DATA.dailyPlan.map(d => {
+        const done = progress.completedDaily.includes(d.day);
+        return `
+          <div class="edit-day-card ${done?'done':''}">
+            <div class="edit-day-header">
+              <div class="edit-day-num ${done?'done':''}">${done?'✓':'D'+d.day}</div>
+              <div class="edit-day-info">
+                <div class="edit-day-task">${d.task}</div>
+                <div class="edit-day-tip">💡 ${d.tip}</div>
+              </div>
+              <button class="edit-day-btn ${done?'done':''}" data-day="${d.day}">${done?'已完成':'完成'}</button>
+            </div>
+          </div>`;
+      }).join('')}
+    `;
+
+    p.querySelector('#editBack').addEventListener('click', () => { editView='plan'; renderEdit(p); });
+    p.querySelectorAll('.edit-day-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const day = +btn.dataset.day;
+        const prog = Store.get('editProgress', { days: [], stage: 1, completedDaily: [] });
+        if (prog.completedDaily.includes(day)) {
+          prog.completedDaily = prog.completedDaily.filter(d => d !== day);
+        } else {
+          prog.completedDaily.push(day);
+        }
+        Store.set('editProgress', prog);
+        renderEdit(p);
+      });
+    });
+  }
+
+  function renderEditSkill(p) {
+    p.innerHTML = `
+      <button class="kr-back" id="editBack">‹ 返回</button>
+      <div class="page-title">剪辑技巧</div>
+      <div class="page-subtitle">10个核心技巧，边学边练</div>
+      ${EDIT_DATA.skills.map((s,i) => `
+        <div class="edit-skill-card">
+          <div class="edit-skill-num">${i+1}</div>
+          <div class="edit-skill-body">
+            <div class="edit-skill-title">${s.title}</div>
+            <div class="edit-skill-desc">${s.desc}</div>
+          </div>
+        </div>
+      `).join('')}
+    `;
+    p.querySelector('#editBack').addEventListener('click', () => { editView='plan'; renderEdit(p); });
+  }
+
+  function renderEditResource(p) {
+    p.innerHTML = `
+      <button class="kr-back" id="editBack">‹ 返回</button>
+      <div class="page-title">资源工具</div>
+      <div class="page-subtitle">素材、教程、工具一站收藏</div>
+      <div class="section-header"><h3>剪映操作速查</h3></div>
+      <div class="edit-shortcut-list">
+        ${EDIT_DATA.shortcuts.map(s => `
+          <div class="edit-shortcut-item">
+            <div class="edit-sc-name">${s.name}</div>
+            <div class="edit-sc-how">${s.how}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="section-header"><h3>推荐资源</h3></div>
+      <div class="inspire-sites">
+        ${EDIT_DATA.resources.map(r => `
+          <a class="inspire-site-card" href="${r.url}" target="_blank" rel="noopener">
+            <div class="inspire-site-icon" style="background:#f59e0b">${r.name[0]}</div>
+            <div class="inspire-site-info">
+              <div class="inspire-site-name">${r.name}</div>
+              <div class="inspire-site-desc">${r.desc}</div>
+            </div>
+            <div class="inspire-site-cat">${r.type}</div>
+          </a>`).join('')}
+      </div>
+    `;
+    p.querySelector('#editBack').addEventListener('click', () => { editView='plan'; renderEdit(p); });
   }
 
   // ===== 我的页 =====
