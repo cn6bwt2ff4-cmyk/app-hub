@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#6366f1">
+  <title>我的工作台</title>
+  <link rel="stylesheet" href="styles.css?v=2">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+</head>
+<body>
+  <div id="app">
+    <!-- 状态栏占位 -->
+    <div class="statusbar-safe"></div>
+
+    <!-- 主内容区 -->
+    <main class="content" id="content">
+      <!-- 各个 Tab 页面会在这里渲染 -->
+    </main>
+
+    <!-- 底部 Tab 栏 -->
+    <nav class="tabbar" id="tabbar">
+      <button class="tab-item active" data-tab="home">
+        <svg viewBox="0 0 24 24" class="tab-icon"><path fill="currentColor" d="M12 3l9 8h-3v9h-4v-6h-4v6H6v-9H3l9-8z"/></svg>
+        <span>首页</span>
+      </button>
+      <button class="tab-item" data-tab="todo">
+        <svg viewBox="0 0 24 24" class="tab-icon"><path fill="currentColor" d="M9 16.2l-3.5-3.5 1.4-1.4L9 13.4l7.1-7.1 1.4 1.4L9 16.2zM12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"/></svg>
+        <span>待办</span>
+      </button>
+      <button class="tab-item" data-tab="notes">
+        <svg viewBox="0 0 24 24" class="tab-icon"><path fill="currentColor" d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>
+        <span>笔记</span>
+      </button>
+      <button class="tab-item" data-tab="korean">
+        <svg viewBox="0 0 24 24" class="tab-icon"><path fill="currentColor" d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+        <span>韩语</span>
+      </button>
+      <button class="tab-item" data-tab="inspire">
+        <svg viewBox="0 0 24 24" class="tab-icon"><path fill="currentColor" d="M12 2C9.24 2 7 4.24 7 7c0 .89.23 1.72.63 2.45L4 13.08V17h4v4h4v-2h2v2h4v-4h4v-3.92l-3.63-3.63c.4-.73.63-1.56.63-2.45 0-2.76-2.24-5-5-5zm0 2c1.66 0 3 1.34 3 3 0 .56-.15 1.08-.42 1.54l-.42.7 2.84 2.84V15h-4v4h-2v-2H8v-2.92l2.84-2.84-.42-.7C10.15 9.08 10 8.56 10 8c0-1.66 1.34-3 3-3z"/></svg>
+        <span>灵感</span>
+      </button>
+      <button class="tab-item" data-tab="tools">
+        <svg viewBox="0 0 24 24" class="tab-icon"><path fill="currentColor" d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/></svg>
+        <span>工具</span>
+      </button>
+      <button class="tab-item" data-tab="me">
+        <svg viewBox="0 0 24 24" class="tab-icon"><path fill="currentColor" d="M12 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4zm0 2c-2.7 0-8 1.3-8 4v2h16v-2c0-2.7-5.3-4-8-4z"/></svg>
+        <span>我的</span>
+      </button>
+    </nav>
+
+    <!-- 底部安全区 -->
+    <div class="home-indicator"></div>
+  </div>
+
+  <!-- 全局 toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="hangul-data.js?v=3"></script>
+  <script src="inspire-data.js"></script>
+  <script src="app.js?v=3"></script>
+</body>
+</html>
