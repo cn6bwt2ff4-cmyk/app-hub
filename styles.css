@@ -706,3 +706,30 @@ html, body {
   font-size: 18px; font-weight: 600; text-align: center; padding: 16px;
   background: var(--bg); border-radius: 10px; margin-bottom: 14px; color: var(--primary);
 }
+
+/* 首页待办输入 */
+.home-todo-input { display: flex; gap: 8px; margin-bottom: 10px; }
+.home-todo-input input {
+  flex: 1; border: 1.5px solid var(--border); border-radius: 10px;
+  padding: 10px 14px; font-size: 14px; font-family: inherit; background: var(--card); outline: none;
+}
+.home-todo-input input:focus { border-color: var(--primary); }
+.home-todo-input button {
+  background: var(--primary); color: #fff; border: none; border-radius: 10px;
+  width: 40px; font-size: 22px; font-family: inherit; cursor: pointer;
+}
+
+/* 首页工具网格 */
+.home-tools-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px;
+}
+.home-tool-card {
+  background: var(--card); border: none; border-radius: 14px; padding: 14px 6px;
+  text-align: center; cursor: pointer; font-family: inherit; transition: transform .12s;
+}
+.home-tool-card:active { transform: scale(.94); }
+.home-tool-icon {
+  width: 40px; height: 40px; border-radius: 12px; margin: 0 auto 6px;
+  display: flex; align-items: center; justify-content: center; font-size: 18px; color: #fff;
+}
+.home-tool-card span { font-size: 11px; color: var(--text-secondary); }

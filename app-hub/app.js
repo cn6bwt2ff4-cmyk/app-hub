@@ -215,7 +215,7 @@
   }
 
   // ---------- Tab 切换 ----------
-  const tabs = ['home', 'todo', 'notes', 'korean', 'inspire', 'tools', 'me'];
+  const tabs = ['home', 'korean', 'english', 'inspire', 'me'];
   let currentTab = 'home';
 
   function switchTab(name) {
@@ -240,11 +240,9 @@
 
     switch (name) {
       case 'home': renderHome(page); break;
-      case 'todo': renderTodo(page); break;
-      case 'notes': renderNotes(page); break;
       case 'korean': renderKorean(page); break;
+      case 'english': renderEnglish(page); break;
       case 'inspire': renderInspire(page); break;
-      case 'tools': renderTools(page); break;
       case 'me': renderMe(page); break;
     }
   }
@@ -262,21 +260,17 @@
       </div>
 
       <div class="quick-grid">
-        <button class="quick-item" data-go="todo">
-          <div class="qi-icon bg-indigo"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5 1.4-1.4L9 13.4l7.1-7.1 1.4 1.4L9 16.2z"/></svg></div>
-          <span>待办</span>
-        </button>
-        <button class="quick-item" data-go="notes">
-          <div class="qi-icon bg-pink"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6z"/></svg></div>
-          <span>笔记</span>
-        </button>
-        <button class="quick-item" data-go="tools">
-          <div class="qi-icon bg-orange"><svg viewBox="0 0 24 24"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/></svg></div>
-          <span>工具</span>
-        </button>
         <button class="quick-item" data-go="korean">
           <div class="qi-icon bg-rose"><svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg></div>
           <span>韩语</span>
+        </button>
+        <button class="quick-item" data-go="english">
+          <div class="qi-icon bg-blue"><svg viewBox="0 0 24 24"><path d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/></svg></div>
+          <span>英语</span>
+        </button>
+        <button class="quick-item" data-go="inspire">
+          <div class="qi-icon bg-purple"><svg viewBox="0 0 24 24"><path d="M12 2C9.24 2 7 4.24 7 7c0 .89.23 1.72.63 2.45L4 13.08V17h4v4h4v-2h2v2h4v-4h4v-3.92l-3.63-3.63c.4-.73.63-1.56.63-2.45 0-2.76-2.24-5-5-5z"/></svg></div>
+          <span>灵感</span>
         </button>
         <button class="quick-item" data-action="newNote">
           <div class="qi-icon bg-green"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
@@ -284,41 +278,120 @@
         </button>
       </div>
 
-      <div class="section-header">
-        <h3>今日待办</h3>
-        <button class="more" data-go="todo">全部 ›</button>
+      <!-- 待办区（可直接操作） -->
+      <div class="section-header"><h3>📝 待办</h3></div>
+      <div class="home-todo-input">
+        <input type="text" id="homeTodoInput" placeholder="添加待办..." maxlength="100">
+        <button id="homeTodoAdd">+</button>
       </div>
-      <div class="card" id="homeTodoList">
-        ${pending.length ? pending.map(t => `
-          <div class="todo-preview-item ${t.done?'done':''}">
-            <div class="dot"></div>
-            <div class="txt">${esc(t.text)}</div>
-          </div>`).join('') : '<div style="text-align:center;padding:20px;color:var(--text-secondary);font-size:14px">🎉 暂无待办，享受当下</div>'}
-      </div>
+      <ul class="todo-list" id="homeTodoList">
+        ${renderHomeTodoList(todos)}
+      </ul>
 
-      <div class="section-header"><h3>最近笔记</h3><button class="more" data-go="notes">全部 ›</button></div>
+      <!-- 笔记区（可直接操作） -->
+      <div class="section-header"><h3>📔 笔记</h3><button class="more" id="homeNewNoteBtn" style="font-size:13px;color:var(--primary);background:none;border:none;font-family:inherit">+ 新建</button></div>
       <div id="homeNotes">
         ${renderHomeNotes()}
       </div>
 
-      <div class="section-header"><h3>韩语40音</h3><button class="more" data-go="korean">去学习 ›</button></div>
+      <!-- 工具区 -->
+      <div class="section-header"><h3>🔧 工具</h3></div>
+      <div class="home-tools-grid" id="homeTools">
+        ${renderHomeTools()}
+      </div>
+      <div class="tool-result" id="toolResult"></div>
+
+      <!-- 韩语进度 -->
+      <div class="section-header"><h3>📚 韩语40音</h3><button class="more" data-go="korean">去学习 ›</button></div>
       <div class="card" id="homeKrProgress">
         ${renderHomeKr()}
       </div>
     `;
 
-    // 绑定跳转
+    // 绑定 Tab 跳转
     p.querySelectorAll('[data-go]').forEach(el => {
       el.addEventListener('click', () => switchTab(el.dataset.go));
     });
-    p.querySelector('[data-action="newNote"]')?.addEventListener('click', () => {
-      switchTab('notes');
-      setTimeout(openNoteModal, 100);
+    // 新笔记按钮
+    p.querySelector('[data-action="newNote"]')?.addEventListener('click', () => { openNoteModal(); });
+    p.querySelector('#homeNewNoteBtn')?.addEventListener('click', () => { openNoteModal(); });
+
+    // 首页待办操作
+    const todoInput = p.querySelector('#homeTodoInput');
+    p.querySelector('#homeTodoAdd').addEventListener('click', () => homeAddTodo(todoInput));
+    todoInput.addEventListener('keydown', e => { if (e.key === 'Enter') homeAddTodo(todoInput); });
+    p.querySelectorAll('.home-todo-check').forEach(el => {
+      el.addEventListener('click', () => { toggleTodo(+el.dataset.id); refreshHomeTodos(); });
+    });
+    p.querySelectorAll('.home-todo-del').forEach(el => {
+      el.addEventListener('click', (e) => { e.stopPropagation(); delTodo(+el.dataset.id); refreshHomeTodos(); });
+    });
+
+    // 首页笔记点击编辑
+    p.querySelectorAll('#homeNotes .note-item').forEach(el => {
+      el.addEventListener('click', () => openNoteModal(+el.dataset.id));
+    });
+
+    // 首页工具
+    p.querySelectorAll('.home-tool-card').forEach(c => {
+      c.addEventListener('click', () => openTool(c.dataset.tool, p.querySelector('#toolResult')));
     });
 
     // 加载天气
     loadWeather();
   }
+
+  function renderHomeTodoList(todos) {
+    const list = todos.slice(0, 5);
+    if (!list.length) return '<div style="text-align:center;padding:16px;color:var(--text-secondary);font-size:14px">🎉 暂无待办</div>';
+    return list.map(t => `
+      <li class="todo-item ${t.done?'done':''}">
+        <div class="check home-todo-check ${t.done?'done':''}" data-id="${t.id}"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5 1.4-1.4L9 13.4l7.1-7.1 1.4 1.4z"/></svg></div>
+        <div class="todo-text">${esc(t.text)}</div>
+        <button class="del home-todo-del" data-id="${t.id}">✕</button>
+      </li>`).join('');
+  }
+
+  function refreshHomeTodos() {
+    const todos = Store.get('todos', []);
+    const el = document.getElementById('homeTodoList');
+    if (el) el.innerHTML = renderHomeTodoList(todos);
+    // 重新绑定事件
+    document.querySelectorAll('.home-todo-check').forEach(el => {
+      el.addEventListener('click', () => { toggleTodo(+el.dataset.id); refreshHomeTodos(); });
+    });
+    document.querySelectorAll('.home-todo-del').forEach(el => {
+      el.addEventListener('click', (e) => { e.stopPropagation(); delTodo(+el.dataset.id); refreshHomeTodos(); });
+    });
+  }
+
+  function homeAddTodo(input) {
+    const text = input.value.trim();
+    if (!text) return toast('请输入内容');
+    const todos = Store.get('todos', []);
+    todos.unshift({ id: Date.now(), text, done: false, createdAt: Date.now() });
+    Store.set('todos', todos);
+    input.value = '';
+    refreshHomeTodos();
+    toast('已添加');
+  }
+
+  function renderHomeTools() {
+    const tools = [
+      { id: 'calc', name: '计算器', icon: '🔢', bg: 'bg-indigo' },
+      { id: 'unit', name: '单位换算', icon: '📏', bg: 'bg-green' },
+      { id: 'qr', name: '二维码', icon: '📱', bg: 'bg-purple' },
+      { id: 'color', name: '取色器', icon: '🎨', bg: 'bg-pink' },
+      { id: 'day', name: '日期计算', icon: '📅', bg: 'bg-orange' },
+      { id: 'pwd', name: '密码生成', icon: '🔐', bg: 'bg-cyan' }
+    ];
+    return tools.map(t => `
+      <button class="home-tool-card" data-tool="${t.id}">
+        <div class="home-tool-icon ${t.bg}">${t.icon}</div>
+        <span>${t.name}</span>
+      </button>`).join('');
+  }
+
 
   function renderHomeKr() {
     const progress = Store.get('krProgress', { completedDays: [], quizScores: {} });
@@ -985,6 +1058,279 @@
   }
 
 
+
+  // ===== 英语学习页 =====
+  let enView = 'plan'; // plan | scene | word | resource
+  let enSceneIdx = 0;
+
+  function renderEnglish(p) {
+    if (enView === 'plan') renderEnPlan(p);
+    else if (enView === 'scene') renderEnScene(p);
+    else if (enView === 'word') renderEnWord(p);
+    else if (enView === 'resource') renderEnResource(p);
+  }
+
+  function renderEnPlan(p) {
+    const progress = Store.get('enProgress', { days: [], stage: 1, startDate: null });
+    const today = new Date().toISOString().slice(0,10);
+    const todayDone = progress.days.includes(today);
+    const totalDays = progress.days.length;
+    const stage = ENGLISH_DATA.stages.find(s => s.id === progress.stage) || ENGLISH_DATA.stages[0];
+
+    p.innerHTML = `
+      <div class="en-overview">
+        <div class="en-title">${ENGLISH_DATA.meta.title}</div>
+        <div class="en-sub">${ENGLISH_DATA.meta.desc}</div>
+        <div class="en-progress"><div class="en-progress-bar" style="width:${Math.min(totalDays/180*100,100)}%"></div></div>
+        <div class="en-progress-text">
+          <span>已坚持 ${totalDays} 天</span>
+          <span>${Math.round(totalDays/180*100)}% / 180天</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="font-size:13px;color:var(--text-secondary)">当前阶段</span>
+          <span style="font-size:12px;background:#dbeafe;color:#1e40af;padding:2px 10px;border-radius:8px">${stage.months}</span>
+        </div>
+        <div style="font-size:18px;font-weight:700;color:var(--primary);margin-bottom:4px">${stage.name}</div>
+        <div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px">${stage.goal}</div>
+        <div style="background:#eff6ff;border-radius:8px;padding:10px;font-size:12px;color:#1e40af;line-height:1.6;margin-bottom:12px">💡 ${stage.tip}</div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px">每日任务（约${stage.dailyTime}分钟）</div>
+        ${stage.tasks.map((t,i) => `<div style="display:flex;align-items:center;gap:8px;padding:4px 0;font-size:13px"><div style="width:18px;height:18px;border-radius:50%;background:var(--primary);color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${i+1}</div>${t}</div>`).join('')}
+      </div>
+
+      <div class="section-header"><h3>今日学习</h3></div>
+      <div class="en-quick-grid">
+        <button class="en-quick-card" data-view="scene">
+          <div class="en-qc-icon" style="background:#3b82f6">💬</div>
+          <div class="en-qc-name">场景对话</div>
+          <div class="en-qc-desc">30个生活场景</div>
+        </button>
+        <button class="en-quick-card" data-view="word">
+          <div class="en-qc-icon" style="background:#10b981">📖</div>
+          <div class="en-qc-name">每日词汇</div>
+          <div class="en-qc-desc">高频实用词</div>
+        </button>
+        <button class="en-quick-card" data-view="resource">
+          <div class="en-qc-icon" style="background:#f59e0b">🔗</div>
+          <div class="en-qc-name">学习资源</div>
+          <div class="en-qc-desc">推荐工具</div>
+        </button>
+      </div>
+
+      <button class="en-checkin-btn ${todayDone?'done':''}" id="enCheckin">
+        ${todayDone ? '✅ 今日已打卡' : '📅 今日打卡'}
+      </button>
+
+      <div class="en-tip-card">
+        <b>🎯 6个月路线图</b><br>
+        <b>第1-2月 激活期</b>：影子跟读+场景对话，重启听说回路<br>
+        <b>第3-4月 输出期</b>：自由复述+话题输出，开始自由表达<br>
+        <b>第5-6月 实战期</b>：原版材料+真人对话，流利交流<br><br>
+        <b>核心原则</b>：每天40分钟 > 每周3小时。开口说从第1天开始，允许犯错。
+      </div>
+    `;
+
+    p.querySelectorAll('.en-quick-card').forEach(c => {
+      c.addEventListener('click', () => {
+        enView = c.dataset.view;
+        if (enView === 'scene') enSceneIdx = 0;
+        renderEnglish(p);
+        $('#content').scrollTop = 0;
+      });
+    });
+
+    p.querySelector('#enCheckin').addEventListener('click', () => {
+      if (todayDone) return;
+      const prog = Store.get('enProgress', { days: [], stage: 1, startDate: null });
+      if (!prog.startDate) prog.startDate = today;
+      prog.days.push(today);
+      // 自动升级阶段
+      if (prog.days.length >= 120) prog.stage = 3;
+      else if (prog.days.length >= 60) prog.stage = 2;
+      Store.set('enProgress', prog);
+      toast('🎉 打卡成功！已坚持' + prog.days.length + '天');
+      renderEnglish(p);
+    });
+  }
+
+  function renderEnScene(p) {
+    const scene = ENGLISH_DATA.scenes[enSceneIdx];
+    p.innerHTML = `
+      <button class="kr-back" id="enBack">‹ 返回</button>
+      <div class="page-title">场景对话</div>
+      <div class="page-subtitle">${enSceneIdx+1} / ${ENGLISH_DATA.scenes.length} · ${scene.category}</div>
+
+      <div class="en-scene-card">
+        <div class="en-scene-label">🗣 对方说</div>
+        <div class="en-scene-en">${scene.en}</div>
+        <div class="en-scene-zh">${scene.zh}</div>
+        <div class="en-scene-actions">
+          <button class="en-play-btn" data-text="${scene.en}" title="朗读">🔊 听</button>
+          <button class="en-rec-btn" data-text="${scene.en}" title="跟读">🎤 跟读</button>
+        </div>
+      </div>
+
+      <div class="en-scene-card" style="border-left-color:var(--success)">
+        <div class="en-scene-label" style="color:var(--success)">💬 你可以回答</div>
+        <div class="en-scene-en">${scene.reply_en}</div>
+        <div class="en-scene-zh">${scene.reply_zh}</div>
+        <div class="en-scene-actions">
+          <button class="en-play-btn" data-text="${scene.reply_en}" title="朗读">🔊 听</button>
+          <button class="en-rec-btn" data-text="${scene.reply_en}" title="跟读">🎤 跟读</button>
+        </div>
+      </div>
+
+      <div class="en-scene-nav">
+        <button class="en-nav-btn" id="enPrev" ${enSceneIdx===0?'disabled':''}>‹ 上一个</button>
+        <button class="en-nav-btn" id="enNext" ${enSceneIdx===ENGLISH_DATA.scenes.length-1?'disabled':''}>下一个 ›</button>
+      </div>
+    `;
+
+    p.querySelector('#enBack').addEventListener('click', () => { enView='plan'; renderEnglish(p); });
+    p.querySelector('#enPrev')?.addEventListener('click', () => { if(enSceneIdx>0){enSceneIdx--;renderEnglish(p);$('#content').scrollTop=0;} });
+    p.querySelector('#enNext')?.addEventListener('click', () => { if(enSceneIdx<ENGLISH_DATA.scenes.length-1){enSceneIdx++;renderEnglish(p);$('#content').scrollTop=0;} });
+
+    // 朗读按钮（用英语TTS）
+    p.querySelectorAll('.en-play-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        speakEnglish(btn.dataset.text);
+      });
+    });
+    // 跟读按钮（复用录音面板）
+    p.querySelectorAll('.en-rec-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        openEnRecPanel(btn.dataset.text);
+      });
+    });
+  }
+
+  function renderEnWord(p) {
+    // 按日期轮换词汇
+    const dayIdx = Math.floor(Date.now() / 86400000) % ENGLISH_DATA.words.length;
+    const words = [];
+    // 显示当天+后面4个，共5个
+    for (let i = 0; i < 5; i++) {
+      words.push(ENGLISH_DATA.words[(dayIdx + i) % ENGLISH_DATA.words.length]);
+    }
+
+    p.innerHTML = `
+      <button class="kr-back" id="enBack">‹ 返回</button>
+      <div class="page-title">每日词汇</div>
+      <div class="page-subtitle">高频实用词 · 在句子里记</div>
+      ${words.map(w => `
+        <div class="en-word-card">
+          <div class="en-word-header">
+            <div class="en-word-en">${w.en}</div>
+            <button class="en-play-btn en-word-play" data-text="${w.en}">🔊</button>
+          </div>
+          <div class="en-word-zh">${w.zh}</div>
+          <div class="en-word-example">${w.example}</div>
+        </div>
+      `).join('')}
+      <div class="en-tip-card" style="margin-top:14px">
+        💡 <b>记词方法</b>：不要背单词本身，背例句。把例句读5遍，读到能脱口而出，这个词就是你的了。
+      </div>
+    `;
+
+    p.querySelector('#enBack').addEventListener('click', () => { enView='plan'; renderEnglish(p); });
+    p.querySelectorAll('.en-word-play').forEach(btn => {
+      btn.addEventListener('click', () => speakEnglish(btn.dataset.text));
+    });
+  }
+
+  function renderEnResource(p) {
+    p.innerHTML = `
+      <button class="kr-back" id="enBack">‹ 返回</button>
+      <div class="page-title">学习资源</div>
+      <div class="page-subtitle">精选英语学习工具</div>
+      <div class="inspire-sites">
+        ${ENGLISH_DATA.resources.map(r => `
+          <a class="inspire-site-card" href="${r.url}" target="_blank" rel="noopener">
+            <div class="inspire-site-icon" style="background:var(--primary)">${r.name[0]}</div>
+            <div class="inspire-site-info">
+              <div class="inspire-site-name">${r.name}</div>
+              <div class="inspire-site-desc">${r.desc}</div>
+            </div>
+            <div class="inspire-site-cat">${r.type}</div>
+          </a>`).join('')}
+      </div>
+      <div class="en-tip-card">
+        <b>推荐使用方式</b><br>
+        • <b>听力</b>：每天看1个YouTube英文视频，开英文字幕<br>
+        • <b>口语</b>：第3个月开始用 HelloTalk 找语伴，每周2次<br>
+        • <b>发音</b>：不确定的词用 YouGlish 搜真实发音<br>
+        • <b>写作</b>：用 Grammarly 写英文日记，每天3句话
+      </div>
+    `;
+    p.querySelector('#enBack').addEventListener('click', () => { enView='plan'; renderEnglish(p); });
+  }
+
+  // 英语TTS朗读
+  function speakEnglish(text, rate) {
+    rate = rate || 0.85;
+    if (!('speechSynthesis' in window)) { toast('不支持语音'); return; }
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US';
+    u.rate = rate;
+    const voices = speechSynthesis.getVoices();
+    const v = voices.find(v => /en[-_]US/i.test(v.lang)) || voices.find(v => /^en/i.test(v.lang));
+    if (v) u.voice = v;
+    setTimeout(() => speechSynthesis.speak(u), 50);
+  }
+
+  // 英语跟读录音面板（复用KR_REC）
+  function openEnRecPanel(text) {
+    let mask = document.createElement('div');
+    mask.className = 'modal-mask';
+    document.body.appendChild(mask);
+    let recording = false;
+    let audioURL = null;
+
+    function render(state) {
+      mask.innerHTML = `
+        <div class="modal rec-panel">
+          <div class="modal-handle"></div>
+          <h3>🎤 英语跟读</h3>
+          <div class="en-rec-text">${text}</div>
+          <div class="rec-wave-wrap">
+            <canvas id="enWave" width="280" height="80"></canvas>
+            ${state === 'idle' ? '<div class="rec-wave-placeholder">点击开始录音</div>' : ''}
+            ${state === 'recorded' && audioURL ? '<audio src="'+audioURL+'" controls style="width:100%;margin-top:8px"></audio>' : ''}
+          </div>
+          <div class="rec-controls">
+            ${state === 'idle' ? '<button class="rec-btn rec-btn-primary" id="enRecStart">🎤 开始录音</button><button class="rec-btn rec-btn-ghost" id="enRecPlay">🔊 听原文</button>' : ''}
+            ${state === 'recording' ? '<button class="rec-btn rec-btn-danger" id="enRecStop">⏹ 停止</button>' : ''}
+            ${state === 'recorded' ? '<button class="rec-btn rec-btn-primary" id="enRecReplay">▶ 我的录音</button><button class="rec-btn rec-btn-ghost" id="enRecPlay2">🔊 原文</button><button class="rec-btn rec-btn-ghost" id="enRecRedo">🔄 重录</button>' : ''}
+          </div>
+          <div class="modal-actions"><button class="btn-cancel" id="enRecClose">关闭</button></div>
+        </div>`;
+
+      mask.querySelector('#enRecClose').onclick = () => { if(recording) KR_REC.cleanup(); mask.remove(); };
+      const playBtn = mask.querySelector('#enRecPlay') || mask.querySelector('#enRecPlay2');
+      if (playBtn) playBtn.onclick = () => speakEnglish(text, 0.85);
+
+      const startBtn = mask.querySelector('#enRecStart');
+      if (startBtn) startBtn.onclick = async () => {
+        const canvas = mask.querySelector('#enWave');
+        const ok = await KR_REC.start(canvas);
+        if (ok) { recording = true; render('recording'); }
+      };
+      const stopBtn = mask.querySelector('#enRecStop');
+      if (stopBtn) stopBtn.onclick = async () => { audioURL = await KR_REC.stop(); recording = false; render('recorded'); };
+      const replayBtn = mask.querySelector('#enRecReplay');
+      if (replayBtn) replayBtn.onclick = () => { const a = mask.querySelector('audio'); if(a) a.play(); };
+      const redoBtn = mask.querySelector('#enRecRedo');
+      if (redoBtn) redoBtn.onclick = () => { KR_REC.reset(); audioURL = null; render('idle'); };
+    }
+
+    mask.classList.add('show');
+    render('idle');
+    mask.onclick = (e) => { if (e.target === mask) { if(recording) KR_REC.cleanup(); mask.remove(); } };
+  }
+
   // ===== 灵感页 =====
   function renderInspire(p) {
     // 按日期轮换美学概念
@@ -1144,8 +1490,8 @@
     });
   }
 
-  function openTool(name) {
-    const r = $('#toolResult');
+  function openTool(name, container) {
+    const r = container || $('#toolResult');
     const map = { calc: toolCalc, unit: toolUnit, qr: toolQR, color: toolColor, day: toolDay, pwd: toolPwd };
     map[name] && map[name](r);
     r.classList.add('show');

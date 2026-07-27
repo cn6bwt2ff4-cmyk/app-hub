@@ -215,7 +215,7 @@
   }
 
   // ---------- Tab 切换 ----------
-  const tabs = ['home', 'todo', 'notes', 'korean', 'english', 'inspire', 'tools', 'me'];
+  const tabs = ['home', 'korean', 'english', 'inspire', 'me'];
   let currentTab = 'home';
 
   function switchTab(name) {
@@ -240,12 +240,9 @@
 
     switch (name) {
       case 'home': renderHome(page); break;
-      case 'todo': renderTodo(page); break;
-      case 'notes': renderNotes(page); break;
       case 'korean': renderKorean(page); break;
       case 'english': renderEnglish(page); break;
       case 'inspire': renderInspire(page); break;
-      case 'tools': renderTools(page); break;
       case 'me': renderMe(page); break;
     }
   }
@@ -263,21 +260,17 @@
       </div>
 
       <div class="quick-grid">
-        <button class="quick-item" data-go="todo">
-          <div class="qi-icon bg-indigo"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5 1.4-1.4L9 13.4l7.1-7.1 1.4 1.4L9 16.2z"/></svg></div>
-          <span>待办</span>
-        </button>
-        <button class="quick-item" data-go="notes">
-          <div class="qi-icon bg-pink"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6z"/></svg></div>
-          <span>笔记</span>
-        </button>
-        <button class="quick-item" data-go="tools">
-          <div class="qi-icon bg-orange"><svg viewBox="0 0 24 24"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/></svg></div>
-          <span>工具</span>
-        </button>
         <button class="quick-item" data-go="korean">
           <div class="qi-icon bg-rose"><svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg></div>
           <span>韩语</span>
+        </button>
+        <button class="quick-item" data-go="english">
+          <div class="qi-icon bg-blue"><svg viewBox="0 0 24 24"><path d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/></svg></div>
+          <span>英语</span>
+        </button>
+        <button class="quick-item" data-go="inspire">
+          <div class="qi-icon bg-purple"><svg viewBox="0 0 24 24"><path d="M12 2C9.24 2 7 4.24 7 7c0 .89.23 1.72.63 2.45L4 13.08V17h4v4h4v-2h2v2h4v-4h4v-3.92l-3.63-3.63c.4-.73.63-1.56.63-2.45 0-2.76-2.24-5-5-5z"/></svg></div>
+          <span>灵感</span>
         </button>
         <button class="quick-item" data-action="newNote">
           <div class="qi-icon bg-green"><svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg></div>
@@ -285,41 +278,120 @@
         </button>
       </div>
 
-      <div class="section-header">
-        <h3>今日待办</h3>
-        <button class="more" data-go="todo">全部 ›</button>
+      <!-- 待办区（可直接操作） -->
+      <div class="section-header"><h3>📝 待办</h3></div>
+      <div class="home-todo-input">
+        <input type="text" id="homeTodoInput" placeholder="添加待办..." maxlength="100">
+        <button id="homeTodoAdd">+</button>
       </div>
-      <div class="card" id="homeTodoList">
-        ${pending.length ? pending.map(t => `
-          <div class="todo-preview-item ${t.done?'done':''}">
-            <div class="dot"></div>
-            <div class="txt">${esc(t.text)}</div>
-          </div>`).join('') : '<div style="text-align:center;padding:20px;color:var(--text-secondary);font-size:14px">🎉 暂无待办，享受当下</div>'}
-      </div>
+      <ul class="todo-list" id="homeTodoList">
+        ${renderHomeTodoList(todos)}
+      </ul>
 
-      <div class="section-header"><h3>最近笔记</h3><button class="more" data-go="notes">全部 ›</button></div>
+      <!-- 笔记区（可直接操作） -->
+      <div class="section-header"><h3>📔 笔记</h3><button class="more" id="homeNewNoteBtn" style="font-size:13px;color:var(--primary);background:none;border:none;font-family:inherit">+ 新建</button></div>
       <div id="homeNotes">
         ${renderHomeNotes()}
       </div>
 
-      <div class="section-header"><h3>韩语40音</h3><button class="more" data-go="korean">去学习 ›</button></div>
+      <!-- 工具区 -->
+      <div class="section-header"><h3>🔧 工具</h3></div>
+      <div class="home-tools-grid" id="homeTools">
+        ${renderHomeTools()}
+      </div>
+      <div class="tool-result" id="toolResult"></div>
+
+      <!-- 韩语进度 -->
+      <div class="section-header"><h3>📚 韩语40音</h3><button class="more" data-go="korean">去学习 ›</button></div>
       <div class="card" id="homeKrProgress">
         ${renderHomeKr()}
       </div>
     `;
 
-    // 绑定跳转
+    // 绑定 Tab 跳转
     p.querySelectorAll('[data-go]').forEach(el => {
       el.addEventListener('click', () => switchTab(el.dataset.go));
     });
-    p.querySelector('[data-action="newNote"]')?.addEventListener('click', () => {
-      switchTab('notes');
-      setTimeout(openNoteModal, 100);
+    // 新笔记按钮
+    p.querySelector('[data-action="newNote"]')?.addEventListener('click', () => { openNoteModal(); });
+    p.querySelector('#homeNewNoteBtn')?.addEventListener('click', () => { openNoteModal(); });
+
+    // 首页待办操作
+    const todoInput = p.querySelector('#homeTodoInput');
+    p.querySelector('#homeTodoAdd').addEventListener('click', () => homeAddTodo(todoInput));
+    todoInput.addEventListener('keydown', e => { if (e.key === 'Enter') homeAddTodo(todoInput); });
+    p.querySelectorAll('.home-todo-check').forEach(el => {
+      el.addEventListener('click', () => { toggleTodo(+el.dataset.id); refreshHomeTodos(); });
+    });
+    p.querySelectorAll('.home-todo-del').forEach(el => {
+      el.addEventListener('click', (e) => { e.stopPropagation(); delTodo(+el.dataset.id); refreshHomeTodos(); });
+    });
+
+    // 首页笔记点击编辑
+    p.querySelectorAll('#homeNotes .note-item').forEach(el => {
+      el.addEventListener('click', () => openNoteModal(+el.dataset.id));
+    });
+
+    // 首页工具
+    p.querySelectorAll('.home-tool-card').forEach(c => {
+      c.addEventListener('click', () => openTool(c.dataset.tool, p.querySelector('#toolResult')));
     });
 
     // 加载天气
     loadWeather();
   }
+
+  function renderHomeTodoList(todos) {
+    const list = todos.slice(0, 5);
+    if (!list.length) return '<div style="text-align:center;padding:16px;color:var(--text-secondary);font-size:14px">🎉 暂无待办</div>';
+    return list.map(t => `
+      <li class="todo-item ${t.done?'done':''}">
+        <div class="check home-todo-check ${t.done?'done':''}" data-id="${t.id}"><svg viewBox="0 0 24 24"><path d="M9 16.2l-3.5-3.5 1.4-1.4L9 13.4l7.1-7.1 1.4 1.4z"/></svg></div>
+        <div class="todo-text">${esc(t.text)}</div>
+        <button class="del home-todo-del" data-id="${t.id}">✕</button>
+      </li>`).join('');
+  }
+
+  function refreshHomeTodos() {
+    const todos = Store.get('todos', []);
+    const el = document.getElementById('homeTodoList');
+    if (el) el.innerHTML = renderHomeTodoList(todos);
+    // 重新绑定事件
+    document.querySelectorAll('.home-todo-check').forEach(el => {
+      el.addEventListener('click', () => { toggleTodo(+el.dataset.id); refreshHomeTodos(); });
+    });
+    document.querySelectorAll('.home-todo-del').forEach(el => {
+      el.addEventListener('click', (e) => { e.stopPropagation(); delTodo(+el.dataset.id); refreshHomeTodos(); });
+    });
+  }
+
+  function homeAddTodo(input) {
+    const text = input.value.trim();
+    if (!text) return toast('请输入内容');
+    const todos = Store.get('todos', []);
+    todos.unshift({ id: Date.now(), text, done: false, createdAt: Date.now() });
+    Store.set('todos', todos);
+    input.value = '';
+    refreshHomeTodos();
+    toast('已添加');
+  }
+
+  function renderHomeTools() {
+    const tools = [
+      { id: 'calc', name: '计算器', icon: '🔢', bg: 'bg-indigo' },
+      { id: 'unit', name: '单位换算', icon: '📏', bg: 'bg-green' },
+      { id: 'qr', name: '二维码', icon: '📱', bg: 'bg-purple' },
+      { id: 'color', name: '取色器', icon: '🎨', bg: 'bg-pink' },
+      { id: 'day', name: '日期计算', icon: '📅', bg: 'bg-orange' },
+      { id: 'pwd', name: '密码生成', icon: '🔐', bg: 'bg-cyan' }
+    ];
+    return tools.map(t => `
+      <button class="home-tool-card" data-tool="${t.id}">
+        <div class="home-tool-icon ${t.bg}">${t.icon}</div>
+        <span>${t.name}</span>
+      </button>`).join('');
+  }
+
 
   function renderHomeKr() {
     const progress = Store.get('krProgress', { completedDays: [], quizScores: {} });
@@ -1418,8 +1490,8 @@
     });
   }
 
-  function openTool(name) {
-    const r = $('#toolResult');
+  function openTool(name, container) {
+    const r = container || $('#toolResult');
     const map = { calc: toolCalc, unit: toolUnit, qr: toolQR, color: toolColor, day: toolDay, pwd: toolPwd };
     map[name] && map[name](r);
     r.classList.add('show');
